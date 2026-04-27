@@ -1,0 +1,15 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <form method="post" class="stack">
+        {% csrf_token %}
+        {% include "payroll/_form_fields.html" with form=form %}
+        <div class="actions">
+            <button type="submit" class="primary-button">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+{% endblock %}

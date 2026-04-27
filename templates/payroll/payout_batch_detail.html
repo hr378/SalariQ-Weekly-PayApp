@@ -1,0 +1,55 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}{{ batch.batch_number }}{% endblock %}
+
+{% block content %}
+<section class="split">
+    <article class="panel">
+        <div class="panel-head">
+            <h3>Batch Summary</h3>
+        </div>
+        <dl class="detail-grid">
+            <div><dt>Week</dt><dd>{{ batch.week.reference }}</dd></div>
+            <div><dt>Site</dt><dd>{{ batch.site|default:"All sites" }}</dd></div>
+            <div><dt>Status</dt><dd>{{ batch.get_status_display }}</dd></div>
+            <div><dt>Total</dt><dd>KES {{ batch.total_amount }}</dd></div>
+        </dl>
+        <div class="actions wrap">
+            <a href="{% url 'payout-batch-export' batch.pk %}" class="primary-button link-button">Export CSV</a>
+            <form method="post" action="{% url 'payout-batch-paid' batch.pk %}">{% csrf_token %}<button class="ghost-button" type="submit">Mark paid</button></form>
+        </div>
+    </article>
+</section>
+
+<section class="panel">
+    <h3>Batch Items</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>ID</th>
+                <th>NSSF</th>
+                <th>NHIF</th>
+                <th>Amount</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in batch.items.all %}
+                <tr>
+                    <td>{{ item.worker.full_name }}</td>
+                    <td>{{ item.phone_number }}</td>
+                    <td>{{ item.id_number|default:"-" }}</td>
+                    <td>{{ item.nssf_number|default:"-" }}</td>
+                    <td>{{ item.nhif_number|default:"-" }}</td>
+                    <td>KES {{ item.amount }}</td>
+                    <td>{{ item.get_payment_category_display }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7">No items in this batch yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

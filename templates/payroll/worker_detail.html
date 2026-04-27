@@ -1,0 +1,60 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Worker Profile{% endblock %}
+
+{% block content %}
+<section class="split">
+    <article class="panel">
+        <div class="panel-head">
+            <h3>{{ worker.full_name }}</h3>
+            <a href="{% url 'worker-update' worker.pk %}" class="ghost-button link-button">Edit</a>
+        </div>
+        <dl class="detail-grid">
+            <div><dt>Worker Code</dt><dd>{{ worker.worker_code }}</dd></div>
+            <div><dt>National ID</dt><dd>{{ worker.national_id|default:"-" }}</dd></div>
+            <div><dt>Phone</dt><dd>{{ worker.phone_number|default:"-" }}</dd></div>
+            <div><dt>MPESA Phone</dt><dd>{{ worker.mpesa_phone|default:"-" }}</dd></div>
+            <div><dt>NHIF</dt><dd>{{ worker.nhif_number|default:"-" }}</dd></div>
+            <div><dt>NSSF</dt><dd>{{ worker.nssf_number|default:"-" }}</dd></div>
+            <div><dt>Site</dt><dd>{{ worker.home_site|default:"-" }}</dd></div>
+            <div><dt>Status</dt><dd>{{ worker.get_status_display }}</dd></div>
+        </dl>
+    </article>
+    <article class="panel">
+        <h3>Open Validation Issues</h3>
+        <ul class="issue-list">
+            {% for issue in validation_issues %}
+                <li>{{ issue.message }}</li>
+            {% empty %}
+                <li>No open issues for this worker.</li>
+            {% endfor %}
+        </ul>
+    </article>
+</section>
+
+<section class="panel">
+    <h3>Earning History</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Week</th>
+                <th>Site</th>
+                <th>Activity</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in earnings_history %}
+                <tr>
+                    <td>{{ result.week.reference }}</td>
+                    <td>{{ result.site }}</td>
+                    <td>{{ result.activity|default:"Adjustment" }}</td>
+                    <td>KES {{ result.amount }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No earnings yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

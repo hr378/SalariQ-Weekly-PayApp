@@ -1,0 +1,114 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}{{ week.reference }}{% endblock %}
+
+{% block content %}
+<section class="split">
+    <article class="panel">
+        <div class="panel-head">
+            <h3>Week Summary</h3>
+            <a href="{% url 'week-update' week.pk %}" class="ghost-button link-button">Edit</a>
+        </div>
+        <dl class="detail-grid">
+            <div><dt>Start</dt><dd>{{ week.start_date }}</dd></div>
+            <div><dt>End</dt><dd>{{ week.end_date }}</dd></div>
+            <div><dt>Status</dt><dd>{{ week.get_status_display }}</dd></div>
+            <div><dt>Blocking Issues</dt><dd>{{ blocking_issue_count }}</dd></div>
+        </dl>
+        <div class="actions wrap">
+            <form method="post" action="{% url 'week-recalculate' week.pk %}">{% csrf_token %}<button class="ghost-button" type="submit">Recalculate & validate</button></form>
+            <form method="post" action="{% url 'week-submit' week.pk %}">{% csrf_token %}<button class="ghost-button" type="submit">Submit for review</button></form>
+            <form method="post" action="{% url 'week-approve' week.pk %}">{% csrf_token %}<button class="primary-button" type="submit">Approve</button></form>
+            <form method="post" action="{% url 'week-return' week.pk %}">{% csrf_token %}<button class="ghost-button" type="submit">Return</button></form>
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head">
+            <h3>Site Summary</h3>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Site</th><th>Workers</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+                {% for row in site_summary %}
+                    <tr><td>{{ row.site__name }}</td><td>{{ row.workers }}</td><td>KES {{ row.total_amount }}</td></tr>
+                {% empty %}
+                    <tr><td colspan="3">No site totals yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h3>Validation Issues</h3>
+        <a href="{% url 'work-record-create' %}" class="ghost-button link-button">New work record</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Severity</th>
+                <th>Code</th>
+                <th>Message</th>
+                <th>Site</th>
+                <th>Worker</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues %}
+                <tr>
+                    <td><span class="badge {{ issue.severity }}">{{ issue.get_severity_display }}</span></td>
+                    <td>{{ issue.code }}</td>
+                    <td>{{ issue.message }}</td>
+                    <td>{{ issue.site|default:"-" }}</td>
+                    <td>{{ issue.worker|default:"-" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">No validation issues for this week.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h3>Work Records</h3>
+        <a href="{% url 'work-record-create' %}" class="primary-button link-button">Capture work</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Site</th>
+                <th>Shift</th>
+                <th>Activity</th>
+                <th>Truck</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in work_records %}
+                <tr>
+                    <td>{{ record.work_date }}</td>
+                    <td>{{ record.site }}</td>
+                    <td>{{ record.shift }}</td>
+                    <td>{{ record.activity }}</td>
+                    <td>{{ record.truck_number|default:"-" }}</td>
+                    <td>{{ record.quantity }}</td>
+                    <td>KES {{ record.total_amount }}</td>
+                    <td>{{ record.get_status_display }}</td>
+                    <td><a href="{% url 'work-record-update' record.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="9">No work records captured yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

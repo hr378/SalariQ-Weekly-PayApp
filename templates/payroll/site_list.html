@@ -1,0 +1,41 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Sites{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-head">
+        <form method="get" class="search-bar">
+            <input type="search" name="q" value="{{ q }}" placeholder="Search sites">
+            <button type="submit" class="ghost-button">Search</button>
+        </form>
+        <a href="{% url 'site-create' %}" class="primary-button link-button">New site</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Model</th>
+                <th>Supervisor</th>
+                <th>Payment</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for site in sites %}
+                <tr>
+                    <td>{{ site.code }}</td>
+                    <td>{{ site.name }}</td>
+                    <td>{{ site.get_payroll_model_display }}</td>
+                    <td>{{ site.supervisor_name|default:"-" }}</td>
+                    <td>{{ site.get_default_payment_method_display }}</td>
+                    <td><a href="{% url 'site-update' site.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No sites created yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

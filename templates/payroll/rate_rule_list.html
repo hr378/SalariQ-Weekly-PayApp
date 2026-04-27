@@ -1,0 +1,43 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Rate Rules{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-head">
+        <form method="get" class="search-bar">
+            <input type="search" name="q" value="{{ q }}" placeholder="Search site or activity">
+            <button type="submit" class="ghost-button">Search</button>
+        </form>
+        <a href="{% url 'rate-rule-create' %}" class="primary-button link-button">New rule</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Site</th>
+                <th>Activity</th>
+                <th>Effective</th>
+                <th>Model</th>
+                <th>Unit Rate</th>
+                <th>Fixed</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rate_rule in rate_rules %}
+                <tr>
+                    <td>{{ rate_rule.site }}</td>
+                    <td>{{ rate_rule.activity }}</td>
+                    <td>{{ rate_rule.effective_from }}{% if rate_rule.effective_to %} to {{ rate_rule.effective_to }}{% endif %}</td>
+                    <td>{{ rate_rule.resolved_model }}</td>
+                    <td>{{ rate_rule.unit_rate }}</td>
+                    <td>{{ rate_rule.fixed_amount }}</td>
+                    <td><a href="{% url 'rate-rule-update' rate_rule.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7">No rules configured yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Activities{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-head">
+        <form method="get" class="search-bar">
+            <input type="search" name="q" value="{{ q }}" placeholder="Search activities">
+            <button type="submit" class="ghost-button">Search</button>
+        </form>
+        <a href="{% url 'activity-create' %}" class="primary-button link-button">New activity</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Unit</th>
+                <th>Rate Model</th>
+                <th>Max Manpower</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in activities %}
+                <tr>
+                    <td>{{ activity.code }}</td>
+                    <td>{{ activity.name }}</td>
+                    <td>{{ activity.get_unit_of_measure_display }}</td>
+                    <td>{{ activity.get_rate_model_display }}</td>
+                    <td>{{ activity.max_manpower|default:"-" }}</td>
+                    <td><a href="{% url 'activity-update' activity.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No activities configured yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Payout Batches{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-head">
+        <h3>MPESA Batch Queue</h3>
+        <a href="{% url 'payout-batch-create' %}" class="primary-button link-button">New batch</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Batch Number</th>
+                <th>Week</th>
+                <th>Site</th>
+                <th>Status</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for batch in batches %}
+                <tr>
+                    <td><a href="{% url 'payout-batch-detail' batch.pk %}">{{ batch.batch_number }}</a></td>
+                    <td>{{ batch.week.reference }}</td>
+                    <td>{{ batch.site|default:"All sites" }}</td>
+                    <td>{{ batch.get_status_display }}</td>
+                    <td>KES {{ batch.total_amount }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5">No payout batches created yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

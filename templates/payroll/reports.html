@@ -1,0 +1,54 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Reports{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-head">
+        <h3>Latest Week Analytics</h3>
+        <p>{% if latest_week %}{{ latest_week.reference }}{% else %}No week data yet{% endif %}</p>
+    </div>
+    <div class="split">
+        <div>
+            <h4>Site Totals</h4>
+            <table>
+                <thead><tr><th>Site</th><th>Headcount</th><th>Total</th></tr></thead>
+                <tbody>
+                    {% for row in site_totals %}
+                        <tr><td>{{ row.site__name }}</td><td>{{ row.headcount }}</td><td>KES {{ row.total_amount }}</td></tr>
+                    {% empty %}
+                        <tr><td colspan="3">No site totals available.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h4>Activity Totals</h4>
+            <table>
+                <thead><tr><th>Activity</th><th>Total</th></tr></thead>
+                <tbody>
+                    {% for row in activity_totals %}
+                        <tr><td>{{ row.activity__name|default:"Adjustment" }}</td><td>KES {{ row.total_amount }}</td></tr>
+                    {% empty %}
+                        <tr><td colspan="2">No activity totals available.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="panel">
+    <h3>Top Earners</h3>
+    <table>
+        <thead><tr><th>Worker</th><th>Site</th><th>Total</th></tr></thead>
+        <tbody>
+            {% for row in top_workers %}
+                <tr><td>{{ row.worker__full_name }}</td><td>{{ row.site__name }}</td><td>KES {{ row.total_amount }}</td></tr>
+            {% empty %}
+                <tr><td colspan="3">No worker totals available.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

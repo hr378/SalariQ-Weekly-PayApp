@@ -1,0 +1,70 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <form method="post" class="stack">
+        {% csrf_token %}
+        <div class="grid-2">
+            {% include "payroll/_form_fields.html" with form=form %}
+        </div>
+
+        <div class="panel inset-panel">
+            <div class="panel-head">
+                <h3>Assigned Workers</h3>
+                <button type="button" class="ghost-button" id="add-assignment">Add worker</button>
+            </div>
+            {{ formset.management_form }}
+            <div id="assignment-forms" class="stack">
+                {% for assignment_form in formset %}
+                    <div class="assignment-row">
+                        {% for hidden in assignment_form.hidden_fields %}{{ hidden }}{% endfor %}
+                        <div class="grid-4">
+                            {% for field in assignment_form.visible_fields %}
+                                <div class="form-field">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="error-text">{{ field.errors|join:", " }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="primary-button">{{ submit_label }}</button>
+        </div>
+    </form>
+</section>
+
+<template id="assignment-template">
+    <div class="assignment-row">
+        <div class="grid-4">
+            {{ formset.empty_form.as_p }}
+        </div>
+    </div>
+</template>
+
+<script>
+    const addButton = document.getElementById("add-assignment");
+    const formContainer = document.getElementById("assignment-forms");
+    const template = document.getElementById("assignment-template");
+    const totalForms = document.getElementById("id_assignments-TOTAL_FORMS");
+
+    if (addButton && template && totalForms) {
+        addButton.addEventListener("click", () => {
+            const index = Number(totalForms.value);
+            const fragment = template.innerHTML.replaceAll("__prefix__", index);
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = fragment;
+            formContainer.appendChild(wrapper.firstElementChild);
+            totalForms.value = index + 1;
+        });
+    }
+</script>
+{% endblock %}

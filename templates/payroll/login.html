@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SalariQ Login</title>
+    <link rel="stylesheet" href="{% static 'payroll/app.css' %}">
+</head>
+<body class="login-page">
+    <div class="login-card">
+        <div class="login-brand">
+            <img src="{% static 'payroll/logo-mark.svg' %}" alt="SalariQ logo">
+            <div>
+                <p class="eyebrow">SalariQ</p>
+                <h1><span>Salari</span><strong>Q</strong></h1>
+                <p class="tagline">SMART PAYROLL. HAPPY PEOPLE.</p>
+            </div>
+        </div>
+        <p class="eyebrow">SalariQ</p>
+        <h2>Sign in to payroll</h2>
+        <form method="post" class="stack">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="error-text">{{ field.errors|join:", " }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="primary-button">Sign in</button>
+        </form>
+    </div>
+</body>
+</html>

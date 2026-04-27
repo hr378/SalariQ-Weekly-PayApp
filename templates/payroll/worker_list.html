@@ -1,0 +1,41 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Workers{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="panel-head">
+        <form method="get" class="search-bar">
+            <input type="search" name="q" value="{{ q }}" placeholder="Search workers by name, ID, phone, or code">
+            <button type="submit" class="ghost-button">Search</button>
+        </form>
+        <a href="{% url 'worker-create' %}" class="primary-button link-button">New worker</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Payout Phone</th>
+                <th>Site</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for worker in workers %}
+                <tr>
+                    <td>{{ worker.worker_code }}</td>
+                    <td><a href="{% url 'worker-detail' worker.pk %}">{{ worker.full_name }}</a></td>
+                    <td>{{ worker.national_id|default:"-" }}</td>
+                    <td>{{ worker.payout_phone|default:"-" }}</td>
+                    <td>{{ worker.home_site|default:"-" }}</td>
+                    <td><span class="badge">{{ worker.get_status_display }}</span></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No workers found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

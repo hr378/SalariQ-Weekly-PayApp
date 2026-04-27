@@ -1,0 +1,102 @@
+{% extends "payroll/base.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="kpi-grid">
+    <article class="kpi-card">
+        <p>Current Payroll Week</p>
+        <h3>{% if current_week %}{{ current_week.reference }}{% else %}Not set{% endif %}</h3>
+    </article>
+    <article class="kpi-card">
+        <p>Pending Reviews</p>
+        <h3>{{ pending_records }}</h3>
+    </article>
+    <article class="kpi-card">
+        <p>Open Issues</p>
+        <h3>{{ open_issues }}</h3>
+    </article>
+    <article class="kpi-card">
+        <p>Unpaid Approved Amount</p>
+        <h3>KES {{ unpaid_total }}</h3>
+    </article>
+</section>
+
+<section class="split">
+    <article class="panel">
+        <div class="panel-head">
+            <h3>Site Totals</h3>
+            <a href="{% url 'reports' %}" class="ghost-button link-button">Full reports</a>
+        </div>
+        {% if not site_totals and current_week and not current_week.active_sites.count %}
+            <div class="notice-card">
+                <p class="eyebrow">Onboarding</p>
+                <h4>Create your first site</h4>
+                <p>Start by adding your own site names and supervisors, then create rate rules for each site.</p>
+                <a href="{% url 'site-create' %}" class="primary-button link-button">Add site</a>
+            </div>
+        {% endif %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Site</th>
+                    <th>Headcount</th>
+                    <th>Total Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in site_totals %}
+                    <tr>
+                        <td>{{ item.site__name }}</td>
+                        <td>{{ item.worker_count }}</td>
+                        <td>KES {{ item.total_amount }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3">No payroll totals yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+
+    <article class="panel">
+        <div class="panel-head">
+            <h3>Quick Actions</h3>
+        </div>
+        <div class="action-list">
+            <a class="quick-action" href="{% url 'site-create' %}">Add your own site</a>
+            <a class="quick-action" href="{% url 'worker-create' %}">Register a worker</a>
+            <a class="quick-action" href="{% url 'work-record-create' %}">Capture work done</a>
+            <a class="quick-action" href="{% url 'week-create' %}">Set payroll week</a>
+            <a class="quick-action" href="{% url 'payout-batch-create' %}">Prepare MPESA batch</a>
+        </div>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-head">
+        <h3>Recent Weeks</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for week in recent_weeks %}
+                <tr>
+                    <td><a href="{% url 'week-detail' week.pk %}">{{ week.reference }}</a></td>
+                    <td>{{ week.start_date }}</td>
+                    <td>{{ week.end_date }}</td>
+                    <td><span class="badge">{{ week.get_status_display }}</span></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No payroll weeks yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
